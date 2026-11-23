@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feed the Orangutan!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9F8D8;--sky:#BFEAC4;--leaf:#2F7D32;--ground:#7CC243;--card:#FFFDF4;--ink:#3B2F26;--muted:#6E5F52;--line:#F0D9A8;--if:#8A5CF6;--then:#2F8BF0;--do:#2FB36B;--good:#2FB36B;--oops:#F08A24;--sun:#FFC83D;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F2418;--sky:#173B26;--leaf:#8EDB7A;--ground:#2F6B2A;--card:#1E3A2A;--ink:#FFF4DC;--muted:#C9BBA0;--line:#3C5E43;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F2418;--sky:#173B26;--leaf:#8EDB7A;--ground:#2F6B2A;--card:#1E3A2A;--ink:#FFF4DC;--muted:#C9BBA0;--line:#3C5E43;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-size:20px;line-height:1.35}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+header{text-align:center}
+h1{margin:6px 0 2px;font-size:clamp(30px,7vw,48px);font-weight:700;color:var(--leaf);letter-spacing:.5px}
+.sub{margin:0 0 10px;color:var(--muted);font-size:22px}
+#prog{display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:12px;font-size:18px;color:var(--muted)}
+#prog i{font-style:normal;font-size:28px;filter:grayscale(1) opacity(.35);transition:transform .3s}
+#prog i.on{filter:none;transform:scale(1.2)}
+#stage{position:relative;height:330px;border-radius:36px;overflow:hidden;background:linear-gradient(var(--sky) 0 58%,var(--ground) 58%);box-shadow:0 6px 0 rgba(0,0,0,.12);border:4px solid var(--card)}
+.deco{position:absolute;font-size:64px;transform-origin:50% 90%;animation:sway 4s ease-in-out infinite alternate}
+.deco.a{left:-6px;top:6px;font-size:90px}.deco.b{right:-4px;top:0;font-size:96px;animation-delay:-2s}.deco.c{left:14%;bottom:14px;font-size:44px}.deco.d{right:12%;bottom:10px;font-size:44px;animation-delay:-1s}
+.bfly{position:absolute;top:70px;right:22%;font-size:32px;animation:fly 5s ease-in-out infinite alternate}
+@keyframes sway{to{transform:rotate(5deg)}}@keyframes fly{to{transform:translate(-40px,16px) rotate(-12deg)}}
+.bubble{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:var(--card);padding:8px 18px;border-radius:24px;font-size:19px;text-align:center;max-width:82%;box-shadow:0 3px 0 rgba(0,0,0,.12);z-index:3}
+#lumiwrap{position:absolute;left:50%;bottom:6px;width:250px;transform:translateX(-50%)}
+.lumi{width:100%;height:auto;display:block;transform-origin:50% 90%;animation:breathe 2.4s ease-in-out infinite}
+.lumi .e,.lumi .m{display:none}
+.lumi.s-wait .e-o,.lumi.s-wait .m-w,.lumi.s-happy .e-h,.lumi.s-happy .m-h,.lumi.s-confused .e-c,.lumi.s-confused .m-c,.lumi.s-sad .e-s,.lumi.s-sad .m-s{display:inline}
+.lumi.s-happy{animation:hop .5s ease-in-out infinite alternate}
+.lumi.s-confused{animation:tilt .6s ease-in-out 2}
+.lumi.s-sad{animation:none;transform:translateY(6px) scale(.97)}
+@keyframes breathe{50%{transform:scale(1.03)}}@keyframes hop{to{transform:translateY(-14px)}}@keyframes tilt{25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+#plate{position:absolute;left:50%;bottom:92px;font-size:62px;transform:translate(-50%,40px) scale(0);z-index:4;pointer-events:none}
+#plate.in{animation:pop .6s forwards}#plate.eat{animation:eat .9s forwards}#plate.no{animation:no 1s forwards}
+@keyframes pop{to{transform:translate(-50%,0) scale(1)}}
+@keyframes eat{0%{transform:translate(-50%,0) scale(1)}60%{transform:translate(-50%,-20px) scale(.5)}100%{transform:translate(-50%,-30px) scale(0)}}
+@keyframes no{0%{transform:translate(-50%,0) scale(1)}40%{transform:translate(-30%,0) scale(1)}100%{transform:translate(-50%,60px) scale(0)}}
+#stage.over{outline:5px dashed var(--sun);outline-offset:-10px}
+#msg{margin:14px 0 8px;min-height:2.6em;text-align:center;font-size:26px;font-weight:600}
+#msg.good{color:var(--good)}#msg.oops{color:var(--oops)}
+.ce{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:10px 16px;text-align:center;margin-bottom:12px;animation:pop2 .4s}
+.ce b{color:var(--if)}.ce b+b{color:var(--then)}
+@keyframes pop2{from{transform:scale(.9);opacity:0}}
+#foods,#chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:10px 0 22px}
+.food{min-height:112px;border:4px solid var(--line);border-radius:28px;background:var(--card);color:var(--ink);font:inherit;font-size:20px;cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 5px 0 var(--line);transition:transform .15s}
+.food span{font-size:54px;line-height:1}
+.food:hover{transform:translateY(-4px) rotate(-2deg)}.food:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.food[disabled]{opacity:.55;cursor:default}
+#chips .food{min-height:76px;flex-direction:row;gap:8px;font-size:18px;box-shadow:0 4px 0 var(--line)}#chips .food span{font-size:36px}
+#chips .food.sel{border-color:var(--if);background:color-mix(in srgb,var(--if) 18%,var(--card))}
+#code{background:var(--card);border-radius:36px;padding:18px 18px 22px;border:4px solid var(--line);transition:opacity .4s}
+#code.locked{opacity:.45;pointer-events:none}
+#code h2{margin:0 0 4px;font-size:30px;color:var(--if);text-align:center}
+.hint{margin:0 0 12px;text-align:center;color:var(--muted);font-size:18px}
+.blk{border-radius:24px;padding:12px 16px;color:#fff;font-weight:700;font-size:24px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.blk.if{background:var(--if);display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom-left-radius:6px}
+.blk.then{background:var(--then);margin-top:6px;border-top-left-radius:6px;padding-bottom:16px}
+.slot{min-width:170px;min-height:58px;border:4px dashed #fff;border-radius:18px;background:rgba(255,255,255,.18);color:#fff;font:inherit;font-size:22px;cursor:pointer;padding:4px 14px}
+.slot.has{border-style:solid;background:#fff;color:var(--ink)}
+.slot.shake{animation:tilt .4s}
+.do{background:var(--do);border-radius:16px;padding:10px 14px;margin-top:10px;font-size:22px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.big{display:block;width:100%;margin-top:16px;min-height:72px;border:0;border-radius:36px;background:var(--sun);color:#3B2F26;font:inherit;font-size:28px;font-weight:700;cursor:pointer;box-shadow:0 7px 0 #D89B00;transition:transform .12s}
+.big:active{transform:translateY(5px);box-shadow:0 2px 0 #D89B00}
+#flow{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:0}
+#flow li{position:relative;text-align:center;background:var(--bg);border:3px solid var(--line);border-radius:22px;padding:10px;margin-bottom:26px;opacity:.5;transition:all .35s}
+#flow li:last-child{margin-bottom:0}
+#flow li::after{content:'↓';position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);font-size:26px;color:var(--then);font-weight:700}
+#flow li:last-child::after{content:none}
+#flow li.on{opacity:1;background:color-mix(in srgb,var(--good) 20%,var(--card));border-color:var(--good);transform:scale(1.04)}
+#msg2{margin-top:14px;text-align:center;font-size:24px;font-weight:600;min-height:1.5em}
+#done{text-align:center;padding-top:6px}
+#done h2{font-size:clamp(28px,6vw,40px);color:var(--leaf);margin:0}
+#done p{font-size:24px;margin:4px 0 8px}
+.badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:18px 0}
+.badge{background:var(--card);border:4px solid var(--sun);border-radius:28px;padding:16px 10px;font-size:21px;font-weight:600;animation:pop2 .5s backwards}
+.badge span{display:block;font-size:48px}
+.badge:nth-child(2){animation-delay:.3s}.badge:nth-child(3){animation-delay:.6s}
+#go{margin-top:14px;font-size:22px;color:var(--good);font-weight:600;min-height:1.4em}
+.again{background:var(--card);color:var(--ink);border:4px solid var(--line);box-shadow:0 7px 0 var(--line)}
+.again:active{box-shadow:0 2px 0 var(--line)}
+:focus-visible{outline:4px solid var(--if);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}}
+@media (max-width:520px){#stage{height:290px}#lumiwrap{width:215px}.deco{font-size:52px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>FEED THE ORANGUTAN!</h1>
+<p class="sub">Can you help Lumi choose the right food?</p>
+<div id="prog" aria-label="Challenge progress"></div>
+</header>
+<main id="play">
+<section id="stage" aria-label="Lumi in a rainforest clearing">
+<div class="deco a">🌴</div><div class="deco b">🌿</div><div class="deco c">🍄</div><div class="deco d">🌺</div><div class="bfly">🦋</div>
+<div class="bubble" id="want"></div>
+<div id="lumiwrap"></div>
+<div id="plate"></div>
+</section>
+<div id="msg" role="status" aria-live="polite"></div>
+<div id="ce" class="ce" hidden></div>
+<section id="foods" aria-label="Food choices"></section>
+<section id="code" class="locked" aria-label="Code the choice">
+<h2>🧩 CODE THE CHOICE</h2>
+<p class="hint">Tap the box, then pick the food that made Lumi happy.</p>
+<div class="blk if">IF <span>food is</span> <button class="slot" id="slot" aria-label="Choose a food for the IF block">?</button></div>
+<div class="blk then">THEN<div class="do">Lumi eats 🍽️</div><div class="do">Lumi becomes happy 😊</div></div>
+<div id="chips" style="margin-bottom:0"></div>
+<button class="big" id="run">▶ Run my code</button>
+<ol id="flow" aria-label="What happens when the code runs"></ol>
+<div id="msg2" role="status" aria-live="polite"></div>
+<button class="big" id="next" hidden>Next challenge →</button>
+</section>
+</main>
+<section id="done" hidden>
+<h2>🌿 WELL DONE, WILDLIFE RANGER!</h2>
+<p>You helped Lumi choose the right food!</p>
+<div id="lumidone" style="width:260px;margin:0 auto"></div>
+<div class="badges">
+<div class="badge"><span>🧩</span>I made a choice</div>
+<div class="badge"><span>🔗</span>I discovered cause &amp; effect</div>
+<div class="badge"><span>💻</span>I used simple coding logic</div>
+</div>
+<button class="big" id="cont">CONTINUE THE RESCUE →</button>
+<button class="big again" id="again">🔄 Feed the Orangutan Again</button>
+<div id="go" role="status" aria-live="polite"></div>
+</section>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const F={banana:['🍌','Banana'],apple:['🍎','Apple'],leaf:['🌿','Leaf'],carrot:['🥕','Carrot'],mango:['🥭','Mango'],grapes:['🍇','Grapes'],melon:['🍉','Watermelon'],pizza:['🍕','Pizza'],cookie:['🍪','Cookie'],fries:['🍟','Fries'],candy:['🍬','Candy']};
+const GOOD=['banana','mango','grapes','melon'],BAD=['pizza','cookie','fries','candy'],TOTAL=5;
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+let r=0,wrong=0,fed=false,slot=null,rd=null,t=[];
+const lumi=()=>`<svg class="lumi s-wait" viewBox="0 0 200 200" role="img" aria-label="Lumi, a friendly baby orangutan"><ellipse cx="100" cy="165" rx="54" ry="36" fill="#E8742A"/><ellipse cx="52" cy="158" rx="16" ry="30" fill="#D9651F" transform="rotate(18 52 158)"/><ellipse cx="148" cy="158" rx="16" ry="30" fill="#D9651F" transform="rotate(-18 148 158)"/><circle cx="42" cy="94" r="16" fill="#E8742A"/><circle cx="42" cy="94" r="8" fill="#F6C58E"/><circle cx="158" cy="94" r="16" fill="#E8742A"/><circle cx="158" cy="94" r="8" fill="#F6C58E"/><circle cx="100" cy="92" r="58" fill="#F08A24"/><path d="M70 48q30-26 60 0q-30-10-60 0z" fill="#D9651F"/><ellipse cx="100" cy="110" rx="38" ry="32" fill="#F6C58E"/><circle cx="66" cy="108" r="7" fill="#F59A9A" opacity=".7"/><circle cx="134" cy="108" r="7" fill="#F59A9A" opacity=".7"/><circle cx="94" cy="104" r="2.4" fill="#8A4B1F"/><circle cx="106" cy="104" r="2.4" fill="#8A4B1F"/>
+<g class="e e-o"><circle cx="80" cy="84" r="8" fill="#2B1B12"/><circle cx="120" cy="84" r="8" fill="#2B1B12"/><circle cx="83" cy="81" r="3" fill="#fff"/><circle cx="123" cy="81" r="3" fill="#fff"/></g>
+<g class="e e-h" fill="none" stroke="#2B1B12" stroke-width="5" stroke-linecap="round"><path d="M70 88q10-14 20 0"/><path d="M110 88q10-14 20 0"/></g>
+<g class="e e-c"><circle cx="80" cy="86" r="8" fill="#2B1B12"/><circle cx="120" cy="84" r="8" fill="#2B1B12"/><circle cx="83" cy="83" r="3" fill="#fff"/><circle cx="123" cy="81" r="3" fill="#fff"/><path d="M110 68q10-6 20 2" stroke="#8A4B1F" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+<g class="e e-s"><circle cx="80" cy="88" r="8" fill="#2B1B12"/><circle cx="120" cy="88" r="8" fill="#2B1B12"/><circle cx="83" cy="85" r="3" fill="#fff"/><circle cx="123" cy="85" r="3" fill="#fff"/><path d="M68 74l20 6M132 74l-20 6" stroke="#8A4B1F" stroke-width="4" stroke-linecap="round"/></g>
+<ellipse class="m m-w" cx="100" cy="124" rx="7" ry="9" fill="#7A2E14"/>
+<g class="m m-h"><path d="M80 118q20 26 40 0z" fill="#7A2E14"/><path d="M92 128q8 7 16 0q-8-4-16 0z" fill="#F07C7C"/></g>
+<path class="m m-c" d="M86 126q7-7 14 0t14 0" stroke="#7A2E14" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path class="m m-s" d="M88 130q12-10 24 0" stroke="#7A2E14" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+function mk(i){if(!i)return{right:'banana',foods:sh(['banana','apple','leaf','carrot']),want:'Lumi wants something yellow and sweet!'};
+ const right=sh(GOOD)[0],n=2+(i%2);return{right,foods:sh([right,...sh(BAD).slice(0,n-1)]),want:'Lumi wants a fruit from the forest!'}}
+const mood=s=>document.querySelectorAll('.lumi').forEach(e=>e.setAttribute('class','lumi s-'+s));
+const msg=(x,k='')=>{const m=$('#msg');m.textContent=x;m.className=k};
+const later=(f,ms)=>t.push(setTimeout(f,ms));
+const card=(k,tag)=>`<button class="food" ${tag==='drag'?'draggable="true"':''} data-k="${k}" aria-label="${F[k][1]}"><span>${F[k][0]}</span>${F[k][1]}</button>`;
+function render(){
+ t.forEach(clearTimeout);t=[];rd=mk(r);wrong=0;fed=false;slot=null;
+ $('#prog').innerHTML=`<span>Challenge ${r+1} of ${TOTAL}</span>`+Array.from({length:TOTAL},(_,i)=>`<i class="${i<r?'on':''}">⭐</i>`).join('');
+ $('#want').textContent=rd.want;$('#ce').hidden=true;
+ $('#foods').innerHTML=rd.foods.map(k=>card(k,'drag')).join('');
+ $('#chips').innerHTML=rd.foods.map(k=>card(k)).join('');
+ $('#slot').textContent='?';$('#slot').className='slot';
+ $('#flow').innerHTML='';$('#msg2').textContent='';$('#next').hidden=true;$('#run').hidden=false;
+ $('#code').classList.add('locked');mood('wait');msg('Tap or drag a food to Lumi!');$('#plate').className='';
+ document.querySelectorAll('#foods .food').forEach(b=>{b.onclick=()=>feed(b.dataset.k);b.ondragstart=e=>e.dataTransfer.setData('text',b.dataset.k)});
+ document.querySelectorAll('#chips .food').forEach(b=>b.onclick=()=>pick(b.dataset.k));
+}
+function feed(k){
+ if(fed)return;const [e,n]=F[k],p=$('#plate');p.textContent=e;p.className='';void p.offsetWidth;p.className='in';
+ if(k===rd.right){fed=true;mood('happy');msg('Yum! Lumi loves this food!','good');
+  $('#ce').innerHTML=`<b>CAUSE</b> → <b>EFFECT</b><br>You chose ${e} ${n} → Lumi eats happily!`;$('#ce').hidden=false;
+  later(()=>p.className='eat',700);
+  document.querySelectorAll('#foods .food').forEach(b=>b.disabled=true);
+  later(()=>{$('#code').classList.remove('locked');msg('Now teach Lumi the rule with code!','good');$('#code').scrollIntoView({behavior:'smooth',block:'start'})},1900);
+ }else{wrong++;const sad=wrong>=2;mood(sad?'sad':'confused');
+  msg(sad?'Lumi is still hungry. Let’s try again together!':'Hmm… Is this the right food for Lumi?','oops');
+  $('#ce').innerHTML=`<b>CAUSE</b> → <b>EFFECT</b><br>You chose ${e} ${n} → Lumi looks ${sad?'a little sad':'confused'}`;$('#ce').hidden=false;
+  later(()=>p.className='no',800);later(()=>mood('wait'),1900);}
+}
+function pick(k){slot=k;const s=$('#slot');s.textContent=F[k][0]+' '+F[k][1];s.className='slot has';
+ document.querySelectorAll('#chips .food').forEach(b=>b.classList.toggle('sel',b.dataset.k===k))}
+$('#slot').onclick=()=>$('#chips').scrollIntoView({behavior:'smooth',block:'center'});
+$('#run').onclick=()=>{
+ if(!fed)return;
+ if(!slot){const s=$('#slot');s.classList.add('shake');setTimeout(()=>s.classList.remove('shake'),500);$('#msg2').textContent='Pick a food for the IF block first!';return}
+ if(slot!==rd.right){mood('confused');$('#msg2').textContent='The code checked your choice, but Lumi isn’t happy yet. Try another food!';later(()=>mood('happy'),1800);return}
+ const st=[['👆',`Choose ${F[slot][0]} ${F[slot][1]}`],['🔍','The program checks the choice'],['🍽️','Lumi eats'],['😊','Lumi becomes happy']];
+ $('#flow').innerHTML=st.map((s,i)=>`<li>${i+1}. ${s[0]} ${s[1]}</li>`).join('');$('#msg2').textContent='';$('#run').hidden=true;
+ document.querySelectorAll('#flow li').forEach((li,i)=>later(()=>li.classList.add('on'),i*750+200));
+ later(()=>{mood('happy');$('#msg2').textContent='Your code told Lumi what to do!';const n=$('#next');n.textContent=r>=TOTAL-1?'Finish →':'Next challenge →';n.hidden=false;n.focus({preventScroll:true})},4000);
+};
+$('#next').onclick=()=>{r++;if(r>=TOTAL){$('#play').hidden=true;$('#prog').hidden=true;$('#done').hidden=false;$('#lumidone').innerHTML=lumi();mood('happy');window.scrollTo({top:0,behavior:'smooth'})}else{render();window.scrollTo({top:0,behavior:'smooth'})}};
+$('#cont').onclick=()=>$('#go').textContent='The rescue continues! Head back to your Ranger team for the next mission.';
+$('#again').onclick=()=>{r=0;$('#done').hidden=true;$('#go').textContent='';$('#lumidone').innerHTML='';$('#play').hidden=false;$('#prog').hidden=false;render();window.scrollTo({top:0,behavior:'smooth'})};
+$('#lumiwrap').innerHTML=lumi();
+const stg=$('#stage');
+stg.ondragover=e=>{e.preventDefault();stg.classList.add('over')};stg.ondragleave=()=>stg.classList.remove('over');
+stg.ondrop=e=>{e.preventDefault();stg.classList.remove('over');const k=e.dataTransfer.getData('text');if(F[k])feed(k)};
+render();
+</script>
+</body>
+</html>
